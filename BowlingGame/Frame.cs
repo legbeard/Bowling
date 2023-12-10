@@ -6,26 +6,9 @@
         /// Whether or not the frame is resolved, meaning no more rolls can be performed
         /// </summary>
         /// <returns>
-        /// <c>false</c> if less than the maximum number of pins have been hit and less than the maximum number of rolls have been used or if this is the last frame and bonus rolls are available.
-        /// Otherwise <c>true</c> 
+        /// <c>true</c> if the maximum number of pits have been hit or the maximum number of rolls have been used, otherwise <c>false</c>
         /// </returns>
-        public bool IsResolved
-        {
-            get
-            {
-                if (_pinsHit < MAX_PINS && _rolls < MAX_ROLLS)
-                {
-                    return false;
-                }
-
-                if (IsLastAndHasBonus)
-                {
-                    return false;
-                }
-
-                return true;
-            }
-        }
+        public virtual bool IsResolved => _pinsHit == MAX_PINS || _rolls == MAX_ROLLS;
 
         /// <summary>
         /// Whether or not the frame has available bonus rolls
@@ -37,10 +20,8 @@
 
         private readonly Frame? _previous = null;
 
-        private bool IsLastAndHasBonus => _isLast && HasBonus;
         private bool PreviousHasBonus => _previous?.HasBonus ?? false;
 
-        private bool _isLast = false;
         private int _pinsHit = 0;
         private int _bonusPoints = 0;
         private int _rolls = 0;
@@ -52,10 +33,9 @@
         /// </summary>
         /// <param name="previous">The previous frame or null</param>
         /// <param name="isLast">Whether or not this is the last frame</param>
-        public Frame(Frame? previous = null, bool isLast = false)
+        public Frame(Frame? previous = null)
         {
             _previous = previous;
-            _isLast = isLast;
         }
 
         /// <summary>
@@ -63,23 +43,17 @@
         /// </summary>
         /// <param name="pinsHit">The number of pins that have been hit</param>
         /// <exception cref="ArgumentException">Thrown when either the frame has already been resolved or if the number of hit pins is invalid in the context of the frame</exception>
-        public void HitPins(int pinsHit)
+        public virtual void HitPins(int pinsHit)
         {
             ValidateRoll(pinsHit);
 
             // If this is the last frame, we have bonus rolls and any number of pins is hit, the first condition will always be true
             // To resolve bonus rolls for the last frame, we explicitly skip this sanity check in the special case of IsLastAndHasBonus
-            if (pinsHit + _pinsHit > MAX_PINS && !IsLastAndHasBonus)
+            if (pinsHit + _pinsHit > MAX_PINS)
             {
                 throw new ArgumentException(
                     $"Attempted to hit {pinsHit} pins, but {_pinsHit} pins were already hit in this frame " +
                     $"and hitting {_pinsHit + pinsHit} pins in a regular frame is impossible");
-            }
-
-            if (IsLastAndHasBonus)
-            {
-                ResolveBonus(pinsHit);
-                return;
             }
 
             _rolls++;
@@ -145,7 +119,7 @@
         /// </summary>
         /// <param name="pinsHit">The amount of pins that were hit </param>
         /// <exception cref="ArgumentException"></exception>
-        private void ValidateRoll(int pinsHit)
+        protected void ValidateRoll(int pinsHit)
         {
             if (IsResolved)
             {

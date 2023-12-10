@@ -21,7 +21,11 @@
 
             if(!_frames.Any() || IsCurrentFrameResolved)
             {
-                _frames.Add(new Frame(CurrentFrame, isLast: _frames.Count == maxFrames - 1));
+                var nextFrame = _frames.Count < maxFrames - 1
+                    ? new Frame(CurrentFrame) 
+                    : new LastFrame(CurrentFrame);
+
+                _frames.Add(nextFrame);
             }
 
             CurrentFrame?.HitPins(score);
