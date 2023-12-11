@@ -1,9 +1,9 @@
-﻿namespace BowlingGame
+﻿namespace Bowling
 {
     /// <summary>
     /// A specialization of the <see cref="Frame"/> class, which allows bonus rolls to be rolled before the frame is resolved.
     /// </summary>
-    internal class LastFrame : Frame
+    public class LastFrame : Frame
     {
         /// <summary>
         /// Creates a new LastFrame instance
@@ -28,6 +28,7 @@
             if (HasBonus)
             {
                 ValidateRoll(pinsHit);
+                _rolls.Add(pinsHit);
                 ResolveBonus(pinsHit);
                 return;
             }

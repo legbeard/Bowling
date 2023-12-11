@@ -1,9 +1,9 @@
-﻿namespace BowlingGame
+﻿namespace Bowling
 {
     /// <summary>
     /// A frame in a game of bowling, used to encapsulate the stateful behavior of frame scoring
     /// </summary>
-    internal class Frame
+    public class Frame
     {
         /// <summary>
         /// Whether or not the frame is resolved, meaning no more rolls can be performed
@@ -11,7 +11,7 @@
         /// <returns>
         /// <c>true</c> if the maximum number of pins have been hit or the maximum number of rolls have been used, otherwise <c>false</c>
         /// </returns>
-        public virtual bool IsResolved => _pinsHit == MAX_PINS || _rolls == MAX_ROLLS;
+        public virtual bool IsResolved => _pinsHit == MAX_PINS || _rolls.Count == MAX_ROLLS;
 
         /// <summary>
         /// Whether or not the frame has available bonus rolls
@@ -22,14 +22,13 @@
         private const int MAX_ROLLS = 2;
 
         private readonly Frame? _previous = null;
+        protected readonly List<int> _rolls = new();
 
         private bool PreviousHasBonus => _previous?.HasBonus ?? false;
 
         private int _pinsHit = 0;
         private int _bonusPoints = 0;
-        private int _rolls = 0;
         private int _bonusRolls = 0;
-
 
         /// <summary>
         /// Creates a new Frame
@@ -59,13 +58,13 @@
                     $"and hitting {_pinsHit + pinsHit} pins in a regular frame is impossible");
             }
 
-            _rolls++;
+            _rolls.Add(pinsHit);
             _pinsHit += pinsHit;
             _previous?.ResolveBonus(pinsHit);
 
             if (_pinsHit == 10)
             {
-                _bonusRolls = MAX_ROLLS + 1 - _rolls;
+                _bonusRolls = MAX_ROLLS + 1 - _rolls.Count;
             }
         }
 
@@ -96,6 +95,11 @@
             return _pinsHit + _bonusPoints;
         }
 
+        /// <summary>
+        /// Gets the rolls that were made in the frame
+        /// </summary>
+        /// <returns></returns>
+        public List<int> GetRolls() => new List<int>(_rolls); // Use copy ctor to avoid modification from outside class
 
         /// <summary>
         /// Resolves a bonus roll.

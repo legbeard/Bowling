@@ -1,12 +1,12 @@
-namespace BowlingGame.Test;
+namespace Bowling.Test;
 
-public class BowlingStrategyTests
+public class BowlingGameTests
 {
-    private readonly BowlingStrategy _sut;
+    private readonly BowlingGame _sut;
 
-    public BowlingStrategyTests()
+    public BowlingGameTests()
     {
-        _sut = new BowlingStrategy();
+        _sut = new BowlingGame();
     }
 
     public static IEnumerable<object[]> BowlingStrategyTestCases()
@@ -41,7 +41,7 @@ public class BowlingStrategyTests
             _sut.Score(roll);
         }
 
-        var scores = _sut.GetIntermediateScores();
+        var scores = _sut.GetCumulativeScores();
         scores.Should().BeEquivalentTo(expectedFrameScores);
     }
 

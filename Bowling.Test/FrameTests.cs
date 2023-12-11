@@ -1,4 +1,4 @@
-﻿namespace BowlingGame.Test;
+﻿namespace Bowling.Test;
 
 public class FrameTests
 {
