@@ -1,12 +1,15 @@
 ﻿namespace BowlingGame
 {
+    /// <summary>
+    /// A frame in a game of bowling, used to encapsulate the stateful behavior of frame scoring
+    /// </summary>
     internal class Frame
     {
         /// <summary>
         /// Whether or not the frame is resolved, meaning no more rolls can be performed
         /// </summary>
         /// <returns>
-        /// <c>true</c> if the maximum number of pits have been hit or the maximum number of rolls have been used, otherwise <c>false</c>
+        /// <c>true</c> if the maximum number of pins have been hit or the maximum number of rolls have been used, otherwise <c>false</c>
         /// </returns>
         public virtual bool IsResolved => _pinsHit == MAX_PINS || _rolls == MAX_ROLLS;
 
@@ -123,7 +126,7 @@
         {
             if (IsResolved)
             {
-                throw new ArgumentException($"Attempted to hit pins in a frame that was already resolved");
+                throw new InvalidOperationException($"Attempted to hit pins in a frame that was already resolved");
             }
 
             if (pinsHit < 0)

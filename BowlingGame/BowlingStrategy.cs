@@ -16,7 +16,7 @@
         {
             if(_frames.Count == maxFrames && IsCurrentFrameResolved)
             {
-                throw new ArgumentException("Attempted to score a game which has ended");
+                throw new InvalidOperationException("Attempted to score a game which has ended");
             }
 
             if(!_frames.Any() || IsCurrentFrameResolved)

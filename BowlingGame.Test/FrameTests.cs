@@ -44,11 +44,11 @@ public class FrameTests
     }
 
     [Fact]
-    public void Should_AddBonusPointsToPreviousWithBonus()
+    public void Should_AddBonusPointsToPrevious_When_PreviousWasStrike()
     {
         var previous = new Frame();
         previous.HitPins(10);
-            
+
         var frame = new Frame(previous);
         frame.HitPins(1);
         frame.HitPins(1);
@@ -56,6 +56,22 @@ public class FrameTests
         previous.GetScore().Should().Be(12);
         frame.GetScore().Should().Be(2);
         frame.GetCumulativeScore().Should().Be(14);
+    }
+
+    [Fact]
+    public void Should_AddBonusPointsToPrevious_When_PreviousWasSpare()
+    {
+        var previous = new Frame();
+        previous.HitPins(5);
+        previous.HitPins(5);
+
+        var frame = new Frame(previous);
+        frame.HitPins(1);
+        frame.HitPins(1);
+
+        previous.GetScore().Should().Be(11);
+        frame.GetScore().Should().Be(2);
+        frame.GetCumulativeScore().Should().Be(13);
     }
 
     [Theory]
@@ -89,5 +105,17 @@ public class FrameTests
             })
             .Should()
             .Throw<ArgumentException>($"it should not be possible to hit {firstRoll} and {secondRoll} consecutively in the same frame");
+    }
+
+    [Fact]
+    public void Should_ThrowInvalidOperationException_When_HittingPinsInAResolvedFrame()
+    {
+        var frame = new Frame();
+
+        frame.HitPins(1);
+        frame.HitPins(1);
+        frame.Invoking(x => x.HitPins(0))
+            .Should()
+            .Throw<InvalidOperationException>("it should be impossible to hit 3 rolls in a regular frame");
     }
 }

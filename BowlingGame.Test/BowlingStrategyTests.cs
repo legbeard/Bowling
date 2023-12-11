@@ -9,7 +9,7 @@ public class BowlingStrategyTests
         _sut = new BowlingStrategy();
     }
 
-    public static IEnumerable<object[]> GetExampleScores()
+    public static IEnumerable<object[]> BowlingStrategyTestCases()
     {
         yield return new object[] // Example Game
         {
@@ -31,9 +31,9 @@ public class BowlingStrategyTests
     }
 
     [Theory]
-    [MemberData(nameof(GetExampleScores))]
-    public void Should_CorrectlyScoreExample_When_GivenExampleInput(
-        IEnumerable<int> knockedPins, 
+    [MemberData(nameof(BowlingStrategyTestCases))]
+    public void Should_CorrectlyScore_When_ScoringExampleGame(
+        IEnumerable<int> knockedPins,
         IEnumerable<int?> expectedFrameScores)
     {
         foreach(var roll in knockedPins)
@@ -43,5 +43,20 @@ public class BowlingStrategyTests
 
         var scores = _sut.GetIntermediateScores();
         scores.Should().BeEquivalentTo(expectedFrameScores);
+    }
+
+    [Fact]
+    public void Should_ThrowInvalidOperationException_When_ScoringAFinishedGame()
+    {
+        // Score a gutter game
+        foreach (var roll in Enumerable.Range(0, 20).Select(_ => 0))
+        {
+            _sut.Score(roll);
+        }
+
+        // Then attempt to roll again
+        _sut.Invoking(x => x.Score(10))
+            .Should()
+            .Throw<InvalidOperationException>();
     }
 }
